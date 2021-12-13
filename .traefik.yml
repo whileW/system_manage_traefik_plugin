@@ -1,11 +1,13 @@
-displayName: Demo Plugin
+displayName: SystemManage Traefik Plugin
 type: middleware
 
-import: github.com/traefik/plugindemo
+import: github.com/whileW/system_manage_traefik_plugin
 
-summary: '[Demo] Add Request Header'
+summary: '系统管理Traefik中间件'
 
 testData:
   Headers:
     X-Demo: test
     X-URL: '{{URL}}'
+  EtcdAddr: 'etcd:2379'
+  LokiAddr: 'http://loki:3100'

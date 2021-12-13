@@ -1,5 +1,5 @@
 // Package plugindemo a demo plugin.
-package plugindemo
+package system_manage_traefik_plugin
 
 import (
 	"bytes"
@@ -12,12 +12,16 @@ import (
 // Config the plugin configuration.
 type Config struct {
 	Headers map[string]string `json:"headers,omitempty"`
+	EtcdAddr string	`json:"etcd_addr,omitempty"`
+	LokiAddr string	`json:"loki_addr,omitempty"`
 }
 
 // CreateConfig creates the default plugin configuration.
 func CreateConfig() *Config {
 	return &Config{
 		Headers: make(map[string]string),
+		EtcdAddr: "etcd:2379",
+		LokiAddr: "http://loki:3100",
 	}
 }
 
@@ -34,7 +38,7 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 	if len(config.Headers) == 0 {
 		return nil, fmt.Errorf("headers cannot be empty")
 	}
-
+	fmt.Println("new plugin")
 	return &Demo{
 		headers:  config.Headers,
 		next:     next,
@@ -44,6 +48,7 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 }
 
 func (a *Demo) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	fmt.Println("serve http")
 	for key, value := range a.headers {
 		tmpl, err := a.template.Parse(value)
 		if err != nil {
@@ -63,4 +68,5 @@ func (a *Demo) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	a.next.ServeHTTP(rw, req)
+	fmt.Println("next http")
 }
